@@ -1,13 +1,15 @@
-name: Deploy Firebase Hosting Preview on PR
+name: Deploy to Firebase Hosting
 
 on:
-  pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
-  build-and-preview:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Setup Flutter
@@ -21,10 +23,10 @@ jobs:
       - name: Build Flutter web
         run: flutter build web --release
 
-      - name: Deploy to Firebase Hosting Preview Channel
+      - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           projectId: rayo-web
-          channelId: pr-${{ github.event.number }}
+          channelId: live
