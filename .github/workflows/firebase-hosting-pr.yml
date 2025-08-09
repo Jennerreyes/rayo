@@ -1,31 +1,17 @@
-name: Deploy Firebase Hosting Preview on PR
-
-on:
-  pull_request:
+name: Firebase Hosting PR Preview
+on: pull_request
 
 jobs:
-  build-and-preview:
+  deploy_preview:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v4
+      - run: npm install && npm run build
+      - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          flutter-version: '3.7.12'
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build Flutter web
-        run: flutter build web --release
-
-      - name: Deploy to Firebase Hosting Preview Channel
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: rayo-web
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          projectId: my-firebase-project
           channelId: pr-${{ github.event.number }}
+        env:
+          FIREBASE_CLI_PREVIEWS: hostingchannels
